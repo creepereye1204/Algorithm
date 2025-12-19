@@ -1,48 +1,47 @@
 n, m = map(int, input().split())
 table = [list(input()) for _ in range(n)]
+visited = [[False for _ in range(m)] for _ in range(n)]
 
 result = []
-visited = [[False] * m for _ in range(n)]
 
 
-dx = [0, 0, -1, 1]
-dy = [-1, 1, 0, 0]
+def fill(visited, arr):
+    for a in arr:
+        visited[a[0]][a[1]] = True
 
-for y in range(n):
-    for x in range(m):
-        if table[y][x] != '*':
-            continue
 
-        size = 0
-        while True:
-            size += 1
-            ok = True
-            for d in range(4):
-                nx = x + dx[d] * size
-                ny = y + dy[d] * size
-                if not (0 <= nx < m and 0 <= ny < n and table[ny][nx] == '*'):
-                    ok = False
-                    break
-            if not ok:
-                size -= 1
-                break
+def find(x, y, table, n, m):
 
-        if size >= 1:
-            result.append((y + 1, x + 1, size))
-            visited[y][x] = True
-            for i in range(1, size + 1):
-                visited[y - i][x] = True
-                visited[y + i][x] = True
-                visited[y][x - i] = True
-                visited[y][x + i] = True
+    arr = [[y, x]]
+    for i in range(1, 1000):
 
-# 모든 '*'이 방문되었는지 확인
-for y in range(n):
-    for x in range(m):
-        if table[y][x] == '*' and not visited[y][x]:
-            print(-1)
-            exit()
+        if -1 < x-i and x+i < m and -1 < y-i and y+i < n and table[y][x-i] == '*' and table[y][x+i] == '*' and table[y-i][x] == '*' and table[y+i][x] == '*':
 
-print(len(result))
-for r in result:
-    print(*r)
+            arr += [[y, x-i], [y, x+i], [y-i, x], [y+i, x]]
+        else:
+            break
+    return arr
+
+
+def check(table, visited, n, m):
+    for i in range(n):
+        for j in range(m):
+            if (table[i][j] == '*' and visited[i][j]) or (table[i][j] == '.' and not visited[i][j]):
+                continue
+            return False
+    return True
+
+
+for i in range(n):
+    for j in range(m):
+        if table[i][j] == '*':
+            arr = find(j, i, table, n, m)
+
+            if len(arr) > 1:
+                result.append([i+1, j+1, (len(arr)-1)//4])
+                fill(visited, arr)
+if check(table, visited, n, m):
+    for r in result:
+        print(*r)
+else:
+    print(-1)
