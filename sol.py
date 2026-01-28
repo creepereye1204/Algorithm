@@ -1,57 +1,65 @@
-# N, M = map(int, input().split())
-# r, c, d = map(int, input().split())
-# graph = [list(map(int, input().split())) for _ in range(N)]
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+
+# 한글 폰트 설정 (Windows: Malgun Gothic, macOS: AppleGothic, Linux: NanumGothic)
+plt.rc('font', family='Malgun Gothic')   # 윈도우라면 'Malgun Gothic'
+# plt.rc('font', family='AppleGothic')   # 맥이라면 'AppleGothic'
+# plt.rc('font', family='NanumGothic')   # 리눅스라면 'NanumGothic'
+
+# 마이너스 기호 깨짐 방지
+matplotlib.rcParams['axes.unicode_minus'] = False
+
+# 데이터 입력
+years = list(range(1, 11))  # 1~10년차 데이터
 
 
-# cleaned = [[False]*M for _ in range(N)]
-# cnt = 0
+marriage_husband_kor = [14677, 14822, 14869,
+                        16608, 17687, 11100, 8985, 12007, 14710, 15624]
+marriage_wife_kor = [6597, 5769, 5966, 6090,
+                     5956, 4241, 4117, 4659, 5007, 5135]
 
 
-# dx = [-1, 0, 1, 0]
-# dy = [0, 1, 0, -1]
+divorce_husband_kor = [5743, 5610, 5206,
+                       5174, 4917, 4378, 4315, 3961, 4175, 4218]
+divorce_wife_kor = [2494, 2055, 1924, 1966, 1982, 1796, 1858, 1849, 1930, 1804]
 
-# while True:
+# 비율 계산 (이혼수 / 혼인수)
 
-#     if not cleaned[r][c]:
-#         cleaned[r][c] = True
-#         cnt += 1
+ratio_husband_kor = [d/m for d,
+                     m in zip(divorce_husband_kor, marriage_husband_kor)]
+ratio_wife_kor = [d/m for d, m in zip(divorce_wife_kor, marriage_wife_kor)]
 
-#     found = False
-#     for i in range(4):
-#         nd = (d + 3 - i) % 4
-#         nr, nc = r + dx[nd], c + dy[nd]
-#         if 0 <= nr < N and 0 <= nc < M and graph[nr][nc] == 0 and not cleaned[nr][nc]:
-#             r, c, d = nr, nc, nd
-#             found = True
-#             break
+# 그래프 그리기
+plt.figure(figsize=(10, 6))
 
-#     if found:
-#         continue
+plt.plot(years, ratio_husband_kor, marker='s', label='한국인 남편 + 외국인 아내')
+plt.plot(years, ratio_wife_kor, marker='^', label='한국인 아내 + 외국인 남편')
 
-#     back_dir = (d + 2) % 4
-#     br, bc = r + dx[back_dir], c + dy[back_dir]
-#     if 0 <= br < N and 0 <= bc < M and graph[br][bc] == 0:
-#         r, c = br, bc
-#     else:
-#         print(cnt)
-#         break
-import sys
+plt.title('외국인 혼인 대비 이혼 비율')
+plt.xlabel('연도(순차 데이터)')
+plt.ylabel('이혼수 / 혼인수 비율')
+plt.legend()
+plt.grid(True)
+plt.show()
+print(ratio_husband_kor, ratio_wife_kor)
 
-input = sys.stdin.readline
+# 전체 혼인/이혼 데이터
+marriage_total = [21274, 20591, 20835, 22698,
+                  23643, 15341, 13102, 16666, 19717, 20759]
+divorce_total = [8237, 7665, 7130, 7140, 6899, 6174, 6173, 5810, 6105, 6022]
 
-n, s = map(int, input().split())
-arr = list(map(int, input().split()))
+# 비율 계산
+ratio_total = [d/m for d, m in zip(divorce_total, marriage_total)]
+ratio_husband_kor = [d/m for d,
+                     m in zip(divorce_husband_kor, marriage_husband_kor)]
+ratio_wife_kor = [d/m for d, m in zip(divorce_wife_kor, marriage_wife_kor)]
 
-answer = float('inf')
-curr_sum = 0
-left = 0
+# 평균 계산
+avg_total = np.mean(ratio_total)
+avg_husband = np.mean(ratio_husband_kor)
+avg_wife = np.mean(ratio_wife_kor)
 
-for right in range(n):
-    curr_sum += arr[right]
-
-    while curr_sum >= s:
-        answer = min(answer, right - left + 1)
-        curr_sum -= arr[left]
-        left += 1
-
-print(0 if answer == float('inf') else answer)
+print("전체 평균:", avg_total)
+print("남편 한국인 평균:", avg_husband)
+print("아내 한국인 평균:", avg_wife)
