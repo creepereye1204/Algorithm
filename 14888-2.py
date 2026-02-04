@@ -1,47 +1,36 @@
-import sys
-sys.setrecursionlimit(10**9)
+N = int(input())
+int_lst = list(map(int, input().split()))
+cal_lst = list(map(int, input().split()))
+
+mx, mn = -1e12, 1e12
 
 
-n = int(input())
-arr = list(map(int, input().split()))
-ops = list(map(int, input().split()))
-mx = -sys.maxsize
-mn = sys.maxsize
+def do_dfs(n, cal):
+    global mx, mn
+    if n == N - 1:
+        mx, mn = max(mx, cal), min(mn, cal)
+
+    if cal_lst[0] != 0:
+        cal_lst[0] -= 1
+        do_dfs(n + 1, cal + int_lst[n + 1])
+        cal_lst[0] += 1
+
+    if cal_lst[1] != 0:
+        cal_lst[1] -= 1
+        do_dfs(n + 1, cal - int_lst[n + 1])
+        cal_lst[1] += 1
+
+    if cal_lst[2] != 0:
+        cal_lst[2] -= 1
+        do_dfs(n + 1, cal * int_lst[n + 1])
+        cal_lst[2] += 1
+
+    if cal_lst[3] != 0:
+        cal_lst[3] -= 1
+        do_dfs(n + 1, int(cal / int_lst[n + 1]))
+        cal_lst[3] += 1
 
 
-def calc(cost, j, index):
-    global arr
-    if j == 0:
-        return cost+arr[index]
-    elif j == 1:
-        return cost-arr[index]
-    elif j == 2:
-        return cost*arr[index]
-    else:
-        if cost < 0:
-            return -(abs(cost)//arr[index])
-        return cost//arr[index]
-
-
-def solve(cost, index):
-    global ops, mx, mn, n
-    index += 1
-
-    if index == n:
-
-        mx = max(mx, cost)
-        mn = min(mn, cost)
-        return
-
-    for j in range(4):
-        if ops[j] > 0:
-            ops[j] -= 1
-
-            solve(calc(cost, j, index), index)
-
-            ops[j] += 1
-
-
-solve(arr[0], 0)
+do_dfs(0, int_lst[0])
 print(mx)
 print(mn)
