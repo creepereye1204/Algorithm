@@ -10,5 +10,4 @@ def convert(num, n):
 def solution(n, t, m, p):
     answer = ''.join(
         [convert(i, n) if i != 0 else '0' for i in range(t*m)])[p-1::m][:t]
-
     return answer
